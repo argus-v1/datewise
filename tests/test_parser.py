@@ -36,6 +36,27 @@ def test_surrounding_whitespace_is_ignored():
 
 
 @pytest.mark.parametrize(
+    "text", ["", " ", "\t\r\n", "\v\f", "\u00a0", "\u2003", "\u3000", "\t \u2003\n"]
+)
+def test_empty_or_whitespace_only_input_raises(text):
+    with pytest.raises(DateParseError, match="empty"):
+        parse_date(text)
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("\u2003March 15, 2024\u00a0", date(2024, 3, 15)),
+        ("\tTODAY\n", TODAY),
+        ("\v+3d\f", date(2026, 11, 8)),
+        ("\u3000-2w\u3000", date(2026, 10, 22)),
+    ],
+)
+def test_surrounding_whitespace_preserves_other_date_forms(text, expected):
+    assert parse_date(text, today=TODAY) == expected
+
+
+@pytest.mark.parametrize(
     ("word", "expected"),
     [("today", TODAY), ("yesterday", date(2026, 11, 4)), ("tomorrow", date(2026, 11, 6))],
 )
