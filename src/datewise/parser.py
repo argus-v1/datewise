@@ -42,11 +42,11 @@ def parse_date(text: str, *, today: date | None = None) -> date:
     if not isinstance(text, str):
         raise TypeError(f"parse_date() expects a str, got {type(text).__name__}")
 
-    if text == "":
-        raise DateParseError("empty date string")
-
     today = today or date.today()
     cleaned = text.strip().lower()
+
+    if not cleaned:
+        raise DateParseError("empty date string")
 
     if cleaned[0] in "+-":
         return _parse_relative(cleaned, today, text)
