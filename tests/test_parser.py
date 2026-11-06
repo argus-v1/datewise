@@ -82,3 +82,9 @@ def test_non_string_raises_type_error():
 
 def test_parse_error_is_a_value_error():
     assert issubclass(DateParseError, ValueError)
+
+
+@pytest.mark.parametrize("blank", ["", "   ", "\t\n"])
+def test_blank_input_raises_parse_error(blank):
+    with pytest.raises(DateParseError, match="empty date string"):
+        parse_date(blank)
